@@ -1,0 +1,33 @@
+#a {
+    display: flex;
+    flex-direction: row;
+    gap: 60px;
+}
+
+#b {
+    display: flex;
+    flex-direction: row;
+    gap: 120px;
+}
+
+#books {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#logout {
+    padding-left: 44vw;
+}
+
+#foo {
+    color: white;
+    background-color: rgb(16, 13, 179);
+    height: 50px;
+    width: 100px;
+}
+
+#button {
+    color: white;
+    background-color: rgb(16, 13, 179);
+}

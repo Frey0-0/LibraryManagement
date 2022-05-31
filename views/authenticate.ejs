@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal</title>
+    <script src="client.js"></script>
+</head>
+
+<body>
+    <form action="/client" method="POST">
+        USERNAME:<input type="text" name="uname" id="user">
+        <br>
+        PASSWORD: <input type="password" name="pass" value="">
+        <br>
+        <input type="submit" value="Login" onclick="userinfo()" />
+        <br>
+        <input type="button" onclick="location.href='/register';" value="New User? Register!">
+    </form>
+</body>
+
+</html>

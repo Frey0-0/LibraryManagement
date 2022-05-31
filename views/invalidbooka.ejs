@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile</title>
+    <script src="frontend.js"></script>
+</head>
+
+<body>
+    <h2>Please enter a valid book name which is in the list</h2>
+    <form action="/addbook" method="POST">
+        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+        <br>
+        <input type="text" name="name" placeholder="BOOK NAME">
+        <br>
+        <input type="submit" value="Add Book" />
+    </form>
+
+    <form action="/removebook" method="POST">
+        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+        <br>
+        <input type="text" name="name" placeholder="BOOK NAME">
+        <br>
+        <input type="submit" value="Remove Book" />
+    </form>
+
+    <h3>Books available in Library</h3>
+    <ul id="l2"></ul>
+    <h3>Books with Clients</h3>
+    <ul id="l3"></ul>
+    <form action="/logout" method="post">
+        <button name="foo">Logout</button>
+    </form>
+
+</body>
+
+</html>
