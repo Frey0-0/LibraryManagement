@@ -18,7 +18,7 @@
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
             <input type="text" name="quantity" id="entry" placeholder="Quantity">
             <br><br>
-            <input type="submit" id="button" value="Add Book" />
+            <input type="submit" id="button" value="Request Book" />
         </form>
         <form action="/client/returnbook" method="POST">
             <input type="text" name="uname" value="<%=uname %>" style="display:none">
@@ -26,7 +26,7 @@
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
             <input type="text" name="quantity" id="entry" placeholder="Quantity">
             <br><br>
-            <input type="submit" id="button" value="Remove Book" />
+            <input type="submit" id="button" value="Return Book" />
         </form>
     </div>
     <div id="lists">
@@ -85,6 +85,7 @@
                         <% }); %>
                             <% } %>
             </ul>
+            <form action="/client/availablebooks" method="POST">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
@@ -96,4 +97,5 @@
         <button name="foo" id="foo">Logout</button>
     </form>
 </body>
+
 </html>

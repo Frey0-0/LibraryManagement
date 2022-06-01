@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/admin.css" />
     <title>Admin Profile</title>
     <style></style>
 </head>
@@ -49,7 +50,7 @@
             <br><br>
             <input type="submit" id="button" value="Add Book" />
         </form>
-        <form action="/removebook" method="POST"
+        <form action="/admin/removebook" method="POST">
             <br>
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
             <input type="text" name="quantity" id="entry" placeholder="Quantity">
@@ -107,10 +108,8 @@
                                                         <form action="/admin/approvedreturn" method="POST">
                                                             <input type="text" name="bname" value="<%=book.name %>"
                                                                 style="display:none">
-                                                            <input type="text" name="uname" value="<%=book.user %>"
-                                                                style="display:none">
-                                                            <input type="text" name="quantity"
-                                                                value="<%=book.quantity %>" style="display:none">
+                                                            <input type="text" name="uname" value="<%=book.user %>" style="display:none">
+                                                            <input type="text" name="quantity" value="<%=book.quantity %>" style="display:none">
                                                             <input type="submit" value="Approve" id="button">
                                                         </form>
                                                         <form action="/admin/disapprovedreturn" method="POST">
@@ -118,8 +117,7 @@
                                                                 style="display:none">
                                                             <input type="text" name="uname" value="<%=book.user %>"
                                                                 style="display:none">
-                                                            <input type="text" name="uname" value="<%=book.quantity %>"
-                                                                style="display:none">
+                                                            <input type="text" name="uname" value="<%=book.quantity %>" style="display:none">
                                                             <input type="submit" value="Disapprove" id="button">
                                                         </form>
                                                     </div>
@@ -137,22 +135,16 @@
                 <% if(locals.adminrequests){ %>
                     <% adminrequests.forEach(function(request) { %>
                         <li> User: <%= request.user %><br>
-                                    <div id="buttons">
-                                        <form action="/admin/approvedadmin" method="POST">
-                                            <input type="text" name="name" value="<%=request.user %>"
-                                                style="display:none">
-                                            <input type="text" name="password" value="<%=request.password %>"
-                                                style="display:none">
-                                            <input type="submit" value="Approve" id="button">
-                                        </form>
-                                        <form action="/admin/disapprovedadmin" method="POST">
-                                            <input type="text" name="name" value="<%=request.user %>"
-                                                style="display:none">
-                                            <input type="text" name="password" value="<%=request.password %>"
-                                                style="display:none">
-                                            <input type="submit" value="Disapprove" id="button">
-                                        </form>
-                                    </div>
+                                <div id="buttons">
+                                    <form action="/admin/approvedadmin" method="POST">
+                                        <input type="text" name="name" value="<%=request.user %>" style="display:none">
+                                        <input type="submit" value="Approve" id="button">
+                                    </form>
+                                    <form action="/admin/disapprovedadmin" method="POST">
+                                        <input type="text" name="name" value="<%=request.user %>" style="display:none">
+                                        <input type="submit" value="Disapprove" id="button">
+                                    </form>
+                                </div>
                         </li>
                         <% }); %>
                             <% } %>
@@ -162,7 +154,7 @@
             </form>
         </div>
     </div>
-    <br><br><br>    
+    <br><br><br>
     <div>
         <form action="/admin/logout" method="post" id="logout">
             <button id="foo">Logout</button>
