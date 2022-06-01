@@ -5,18 +5,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/authorize.css" />
     <title>Admin Portal</title>
-    <script src="client.js"></script>
 </head>
 
 <body>
-    <form action="/admin" method="POST">
-        USERNAME:<input type="text" name="uname">
-        <br>
-        PASSWORD: <input type="password" name="pass">
-        <br>
-        <input type="submit" value="Login" onclick="admin()" />
-    </form>
+    <div id="form">
+        <form action="/admin/auth" method="POST">
+            Username:<input type="text" name="uname" id="user">
+            <br><br>
+            Password: <input type="password" name="pass" id="pass">
+            <br><br>
+            <div id="buttons">
+                <div>
+                    <input type="submit" value="Login" id="login" />
+                </div>
+                <div>
+                    <input type="button" onclick="location.href='/admin/registeradmin';" value="Register Admin" id="register">
+                </div>
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>

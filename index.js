@@ -16,7 +16,8 @@ require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-    console.log(`server started at ${PORT}`));
+    console.log(`server started at ${PORT}`)
+);
 
 const router = express.Router();
 
@@ -24,29 +25,26 @@ app.use('/', router);
 router.get('/', (req, res) => {
     res.render('homepage');
 });
-router.get('/authenticate', (req, res) => {
+router.get('/client/authenticate', (req, res) => {
     res.render('authenticate');
 });
-router.get('/authorize', (req, res) => {
+router.get('/admin/authorize', (req, res) => {
     res.render('authorize');
 });
 
-router.post('/client', (req, res) => {
+router.post('/client/auth', (req, res) => {
     let name = req.body.uname;
     let password = req.body.pass;
     let string = new String(password);
-    let i = 0; let l = string.length;
-    for (i = 0; i < l; i++) {
-        string = string + string[l - i - 1];
-    }
     db.query('select * from users where username =' + db.escape(name) + ';',
         (error, result, fields) => {
-            const hash = crypto.createHash('sha256').update(string).digest('base64');
             if (error) {
                 return res.render('notclient');
             }
-
             else {
+                let salt = new String(result[0].salt);
+                string += salt;
+                const hash = crypto.createHash('sha256').update(string).digest('base64');
                 if (result[0] != undefined && result[0].password === hash) {
                     cookiec = random.generate(8);
                     return res.render('client', { SessionID: cookiec, uname: name });
@@ -58,29 +56,22 @@ router.post('/client', (req, res) => {
                 }
             }
         });
-    db.query('select * from books where user= ' + name + ';',
-        (error, result, fields) => {
-            a = result;
-        })
 });
 
-router.post('/admin', (req, res) => {
+router.post('/admin/auth', (req, res) => {
     let name = req.body.uname;
     let password = req.body.pass;
     let string = new String(password);
-    let i = 0; let l = string.length;
-    for (i = 0; i < l; i++) {
-        string = string + string[l - i - 1];
-    }
     db.query('select * from admin where username =' + db.escape(name) + ';',
         (error, result, fields) => {
-            const hash = crypto.createHash('sha256').update(string).digest('base64');
             if (error) {
-                console.log('err');
+                throw (err);
                 return res.render('notadmin');
             }
             else {
-
+                let salt = new String(result[0].salt);
+                string += salt;
+                const hash = crypto.createHash('sha256').update(string).digest('base64');
                 if (result[0] != undefined && result[0].password === hash) {
                     cookiea = random.generate(8);
                     return res.render('admin', { SessionID: cookiea, uname: name });
@@ -92,25 +83,377 @@ router.post('/admin', (req, res) => {
         });
 });
 
-router.get('/register', (req, res) => {
+router.get('/client/register', (req, res) => {
     res.render(`register`);
 });
-router.post('/newuser', (req, res) => {
+router.post('client/newuser', (req, res) => {
     let name = req.body.uname;
     let password = req.body.pass;
     let passwordC = req.body.passc;
-    let string = new String(password);
-    let i = 0; let l = string.length;
-    for (i = 0; i < l; i++) {
-        string = string + string[l - i - 1];
-    }
-    const hash = crypto.createHash('sha256').update(string).digest('base64');
+    let length=password.length;
     db.query("select * from users where username = " + db.escape(name) + ";",
         (error, result, field) => {
             if (result[0] === undefined) {
+                if(length>=8){
                 if (name && (password == passwordC)) {
-                    db.query("insert into users values(" + db.escape(name) + ",'" + hash + "');");
+                    let salt = random.generate(8);
+                    let string = new String(password)
+                    string = password + salt;
+                    const hash = crypto.createHash('sha256').update(string).digest('base64');
+                    db.query("insert into users values(" + db.escape(name) + "," + db.escape(hash) + "," + db.escape(salt) + ");");
                     res.render(`authenticate`);
+                }
+                else if (password !== passwordC) {
+                    res.send("Passwords dont match. Please enter the same password");
+                }
+                else {
+                    res.send("Password field is empty");
+                }
+            }
+            else{
+                res.render("Please enter password of appropriate length");
+            }
+            }
+            else {
+                res.send("Username already taken. Choose another one.");
+            }
+        });
+});
+
+router.post('/admin/addbook', (req, res) => {
+    let bname = req.body.name;
+    let cookie = req.body.ID;
+    let quantity = parseInt(req.body.quantity)
+    if (cookiea == cookie) {
+        db.query('select * from available where name=' + db.escape(bname) + ';',
+            (err, result, fields) => {
+                if (err) throw err;
+                if (result[0] != undefined) {
+                    db.query('update available set quantity=' + (quantity + result[0].quantity) + ' where name=' + db.escape(bname) + ';')
+                }
+                else {
+                    db.query('insert into available values(' + db.escape(bname) + ',' + db.escape(quantity) + ');');
+                }
+            })
+        return res.render('admin', { SessionID: cookiea })
+    }
+    else {
+        cookiec = "";
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/requestbook', (req, res) => {
+    let bname = req.body.name;
+    let cookie = req.body.ID;
+    let quantity = parseInt(req.body.quantity)
+    if (cookiec == cookie) {
+        let name = req.body.uname;
+        db.query('select * from available where name  =' + db.escape(bname) + ';',
+            (error, result, fields) => {
+                if (error) {
+                    return res.render('invalidbookc', { SessionID: cookiec, uname: name });
+                }
+                else {
+                    if (result[0] != undefined) {
+                        if (result[0].quantity > quantity) {
+                            db.query('insert into  requests  values(' + db.escape(bname) + ',' + db.escape(name) + ',' + db.escape(quantity) + ',0);',
+                                (err, result, fields) => {
+                                    if (err) throw err;
+                                });
+                            db.query('update available set quantity =' + (result[0].quantity - quantity) + ' where name =' + db.escape(bname) + ';');
+                            return res.render('client', { SessionID: cookiec, uname: name });
+                        }
+                        else if (result[0].quantity == quantity) {
+                            db.query('insert into  requests  values(' + db.escape(bname) + ',' + db.escape(name) + ',' + db.escape(quantity) + ',0);',
+                                (err, result, fields) => {
+                                    if (err) throw err;
+                                });
+                            db.query('delete from available where name=' + db.escape(bname) + ';')
+                        }
+                        else {
+                            return res.render('invalidbookc', { SessionID: cookiec, uname: name });
+                        }
+                    }
+                    else {
+                        return res.render('invalidbookc', { SessionID: cookiec, uname: name });
+                    }
+                }
+            });
+    }
+    else {
+        cookiec = "";
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/admin/removebook', (req, res) => {
+    let bname = req.body.name;
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    let quantity = parseInt(req.body.quantity)
+    if (cookiec == cookie) {
+        db.query('select * from unavailable where name =' + db.escape(bname) + ' AND user=' + db.escape(name) + ';',
+            (error, result, fields) => {
+                if (error) {
+                    return res.render('invalidbookc', { SessionID: cookiec, uname: name });
+                }
+
+                if (result[0] != undefined && result[0].user == name) {
+                    db.query('insert into requests values(' + db.escape(bname) + ',' + db.escape(name) + ',' + db.escape(quantity) + ',-1);',
+                        (err, result, fields) => {
+                            if (err) throw err;
+                        })
+                    return res.render('client', { SessionID: cookiec, uname: name });
+                }
+                else {
+                    return res.render('invalidbookc', { SessionID: cookiec, uname: name });
+                }
+
+            });
+    }
+    else {
+        cookiec = "";
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/returnbook', (req, res) => {
+    let bname = req.body.name;
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    let quantity = parseInt(req.body.quantity)
+    if (cookiea == cookie) {
+        db.query(' select * from available where name = ' + db.escape(bname) + ';',
+            (err, result, fields) => {
+                if (err) throw err;
+                if (result[0] != undefined) {
+                    if (quantity > result[0].quantity) {
+                        return res.render('invalidbooka', { SessionID: cookiea })
+                    }
+                    else if (quantity < result[0].quantity) {
+                        db.query('update available set quantity=' + db.escape((result[0].quantity - quantity)) + ' where name=' + db.escape(bname) + ';')
+                        return res.render('admin', { SessionID: cookiea })
+                    }
+                    else {
+                        db.query('delete from available where name = ' + db.escape(bname) + ";")
+                        return res.render('admin', { SessionID: cookiea })
+                    }
+                }
+                else {
+                    return res.render('invalidbooka', { SessionID: cookiea });
+                }
+            })
+    }
+    else {
+        cookiec = "";
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/logout', (req, res) => {
+    cookiec = "";
+    cookiea = "";
+    return res.render('homepage');
+});
+router.post('/admin/logout', (req, res) => {
+    cookiec = "";
+    cookiea = "";
+    return res.render('homepage');
+});
+
+router.post('/admin/approved', (req, res) => {
+    let name = req.body.uname;
+    let bname = req.body.bname;
+    let quantity = parseInt(req.body.quantity);
+    let today = new Date();
+    db.query('select * from unavailable where name=' + db.escape(bname) + ' AND user=' + db.escape(name),
+        (err, result, fields) => {
+            if (result[0] == undefined) {
+                db.query('insert into unavailable values(' + db.escape(bname) + ',' + db.escape(name) + ',' + db.escape(quantity) + ',' + today.getDate() + ',' + today.getMonth() + ',' + today.getFullYear() + ');');
+            }
+            else {
+                db.query('update unavailable set quantity =' + db.escape(quantity + result[0].quantity) + ' where name=' + db.escape(bname) + ' AND user=' + db.escape(name) + ';');
+            }
+        })
+    db.query('delete from requests where name=' + db.escape(bname) + ' AND user=' + db.escape(name) + ' AND status=0;')
+    return res.render('admin', { SessionID: cookiea });
+});
+
+router.post('/admin/disapproved', (req, res) => {
+    let name = req.body.uname;
+    let bname = req.body.bname;
+    let quantity = parseInt(req.body.quantity);
+    db.query('select * from available where name=' + db.escape(bname) + ';',
+        (err, result, fields) => {
+            if (result[0] == undefined) {
+                db.query('insert into available values(' + db.escape(bname) + ',' + db.escape(quantity) + ');')
+            }
+            else {
+                db.query('update available set quantity=' + db.escape((result[0].quantity + quantity)) + ' where name=' + db.escape(bname) + ';');
+            }
+        })
+    db.query('update requests set status=2 where user=' + db.escape(name) + 'AND name=' + db.escape(bname) + 'AND status=0;');
+    return res.render('admin', { SessionID: cookiea });
+});
+
+router.post('/admin/approvedreturn', (req, res) => {
+    let name = req.body.uname;
+    let bname = req.body.bname;
+    let quantity = parseInt(req.body.quantity);
+    db.query('select * from available where name=' + bname + ';',
+        (err, result, fields) => {
+            if (result[0] == undefined) {
+                db.query('insert into available values(' + db.escape(bname) + ',' + db.escape(quantity) + ');')
+            }
+
+            else {
+                db.query('update available set quantity=' + db.escape((result[0].quantity + quantity)) + ' where name=' + db.escape(bname) + ';');
+            }
+        })
+    db.query('select * from unavailable where name=' + db.escape(bname) + 'AND user=' + db.escape(name) + ';',
+        (err, result, fields) => {
+            let q1 = result[0].quantity;
+            if (q1 > quantity) {
+                db.query('update unavailable set quantity=' + db.escape((q1 - quantity)) + ' where name=' + db.escape(bname) + 'AND user=' + db.escape(name) + ';')
+            }
+            if (q1 == quantity)
+                db.query('delete from unavailable where name=' + db.escape(bname) + 'AND user=' + db.escape(name) + ';')
+        })
+    db.query('delete from requests where user=' + db.escape(name) + 'AND name=' + db.escape(bname) + ' AND status=-1;');
+    return res.render('admin', { SessionID: cookiea });
+});
+
+router.post('/admin/disapprovedreturn', (req, res) => {
+    let name = req.body.uname;
+    let bname = req.body.bname;
+    db.query('update requests set status=2 where user=' + db.escape(name) + ' AND name=' + db.escape(bname) + ' AND status=-1;')
+    return res.render('admin', { SessionID: cookiea });
+});
+
+router.post('/client/list1', (req, res) => {
+    let name = req.body.uname;
+    let cookie = req.body.ID;
+    if (cookie == cookiec) {
+        db.query('select * from unavailable where user=' + db.escape(name),
+            (error, result, fields) => {
+                let a = result;
+                return res.render('client', { mylist: a, SessionID: cookiec, uname: name });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/availablebooks', (req, res) => {
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    if (cookie == cookiec) {
+        db.query('select * from available;',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('client', { available: a, SessionID: cookiec, uname: name });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/admin/availablebooks', (req, res) => {
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    if (cookie == cookiea) {
+        db.query('select * from available;',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('admin', { available: a, SessionID: cookiea });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/admin/unavailable', (req, res) => {
+    let cookie = req.body.ID;
+    if (cookie == cookiea) {
+        db.query('select * from unavailable;',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('admin', { unavailable: a, SessionID: cookiea });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/admin/checkout', (req, res) => {
+    let cookie = req.body.ID;
+    if (cookie == cookiea) {
+        db.query('select * from requests where status = 0;',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('admin', { approval: a, SessionID: cookiea });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/admin/checkin', (req, res) => {
+    let cookie = req.body.ID;
+    if (cookie == cookiea) {
+        db.query('select * from requests where status = -1;',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('admin', { ret: a, SessionID: cookiea });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/requestedbooks', (req, res) => {
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    if (cookie == cookiec) {
+        db.query('select * from requests where status=0 AND user=' + db.escape(name) + ';',
+            (error, result, fields) => {
+                let a = result;
+                return res.render('client', { requested: a, SessionID: cookiec, uname: name });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.post('/client/rejectedrequests', (req, res) => {
+    let cookie = req.body.ID;
+    let name = req.body.uname;
+    if (cookie == cookiec) {
+        db.query('select * from requests where status=2 AND user=' + db.escape(name) + ';',
+            (error, result, fields) => {
+                let a = result;
+                db.query('delete from requests where status=2 AND user=' + db.escape(name) + ';')
+                return res.render('client', { rejected: a, SessionID: cookiec, uname: name });
+            })
+    }
+    else {
+        return res.render('cookiemismatch');
+    }
+});
+router.get('/admin/registeradmin', (req, res) => {
+    res.render('registeradmin');
+});
+router.get('/newadmin', (req, res) => {
+    res.render('registeradmin');
+});
+router.post('/admin/registeradmin', (req, res) => {
+    let name = req.body.uname;
+    let password = req.body.pass;
+    let passwordC = req.body.passc;
+
+    db.query("select * from adminreq where user = " + db.escape(name) + ";",
+        (error, result, field) => {
+            if (result[0] === undefined) {
+                if (name && (password == passwordC)) {
+                    db.query("insert into adminreq values(" + db.escape(name) + "," + db.escape(password) + ");");
+                    res.send("Admin will approve your request soon!");
                 }
                 else if (password !== passwordC) {
                     res.send("Passwords dont match. Please enter the same password");
@@ -124,178 +467,32 @@ router.post('/newuser', (req, res) => {
             }
         });
 });
-
-router.post('/addbook', (req, res) => {
-    let bname = req.body.name;
-    let cookie = req.body.ID;
-    let name = req.body.uname;
-    if (cookiec == cookie) {
-        db.query('select * from books where name  =' + db.escape(bname) + ';',
-            (error, result, fields) => {
-                if (error) {
-                    return res.render('invalidbookc', { SessionID: cookiec, uname: name });
-                }
-                else {
-                    if (result[0] != undefined && result[0].user == null) {
-                        db.query('update books set status = 0, user =' + db.escape(name) + 'where name=' + db.escape(bname) + ';',
-                            (err, result, fields) => {
-                                if (err) throw err;
-                            })
-                        return res.render('client', { SessionID: cookiec, uname: name });
-                    }
-                    else {
-                        return res.render('invalidbookc', { SessionID: cookiec, uname: name });
-                    }
-                }
-            });
-    }
-    else if (cookiea == cookie) {
-        db.query('insert into books values(' + db.escape(bname) + ',null,null,null,null,null);')
-        return res.render('admin', { SessionID: cookiea })
-    }
-    else {
-        cookiec = "";
-        return res.render('cookiemismatch');
-    }
-});
-router.post('/removebook', (req, res) => {
-    let bname = req.body.name;
-    let cookie = req.body.ID;
-    let name = req.body.uname;
-    if (cookiec == cookie) {
-        db.query('select * from books where name =' + db.escape(bname) + ';',
-            (error, result, fields) => {
-                if (error) {
-                    return res.render('invalidbookc', { SessionID: cookiec, uname: name });
-                }
-                else {
-                    if (result[0] != undefined && result[0].user == name) {
-                        db.query('update books set status = -1 where name=' + db.escape(bname) + ';',
-                            (err, result, fields) => {
-                                if (err) throw err;
-                            })
-                        return res.render('client', { SessionID: cookiec, uname: name });
-                    }
-                    else {
-                        return res.redirect('invalidbookc', { SessionID: cookiec, uname: name });
-                    }
-                }
-            });
-    }
-    else if (cookiea == cookie) {
-        db.query('delete from books where name = ' + db.escape(bname) + ';')
-        return res.render('admin', { SessionID: cookiea })
-    }
-    else {
-        cookiec = "";
-        return res.render('cookiemismatch');
-    }
-});
-router.post('/logout', (req, res) => {
-    cookiec = "";
-    cookiea = "";
-    return res.render('homepage');
-});
-
-router.post('/approved', (req, res) => {
-    let name = req.body.uname;
-    let bname = req.body.bname;
-    let today = new Date();
-    db.query("update books set status = 1, day =" + today.getDate() + " ,month =" + today.getMonth() + ",year =" + today.getFullYear() + ",user =" + db.escape(name) + " where name=" + db.escape(bname) + ";");
-    return res.render('admin', { SessionID: cookiea });
-});
-
-router.post('/disapproved', (req, res) => {
-    let name = req.body.uname;
-    let bname = req.body.bname;
-    let today = new Date();
-    db.query("update books set status = null, user = null where name = " + db.escape(bname) + ";");
-    return res.render('admin', { SessionID: cookiea });
-});
-
-router.post('/approved1', (req, res) => {
-    let bname = req.body.bname;
-    db.query("update books set status = null, user = null, day=null, month = null, year=null where name =" + db.escape(bname) + ";");
-    return res.render('admin', { SessionID: cookiea });
-});
-
-router.post('/disapproved1', (req, res) => {
-    let bname = req.body.bname;
-    db.query("update books set status = 1 where name = " + db.escape(bname)+";");
-    return res.render('admin', { SessionID: cookiea });
-});
-
-router.post('/list1', (req, res) => {
-    let name = req.body.uname;
-    let cookie = req.body.ID;
-    if (cookie == cookiec) {
-        db.query(`select * from books where user= "${name}" AND (status=1 OR status = -1);`,
-            (error, result, fields) => {
-                let a = result;
-                return res.render('client',{ mylist: a,SessionID: cookiec, uname: name});
-            })
-    }
-    else {
-        return res.render('cookiemismatch');
-    }
-});
-router.post('/list2', (req, res) => {
-    let cookie = req.body.ID;
-    let name = req.body.uname;
-    if (cookie == cookiec) {
-        db.query('select * from books where status is null OR status=0 ;',
-            (error, result, fields) => {
-                let a = result;
-                return res.render('client',{ available: a, SessionID: cookiec, uname: name });
-            })
-    }
-    else if (cookie == cookiea) {
-        db.query('select * from books where status is null OR status=0 ;',
-            (error, result, fields) => {
-                let a = result;
-                return res.render('admin',{ available: a, SessionID: cookiea  });
-            })
-    }
-    else {
-        return res.render('cookiemismatch');
-    }
-});
-router.post('/list3', (req, res) => {
+router.post('/admin/showadminrequests', (req, res) => {
     let cookie = req.body.ID;
     if (cookie == cookiea) {
-        db.query('select * from books where status=1 OR status=-1;',
+        db.query('select * from adminreq',
             (error, result, fields) => {
                 let a = result;
-                return res.render('admin',{ unavailable: a , SessionID: cookiea  });
+                return res.render('admin', { adminrequests: a, SessionID: cookiea });
             })
     }
     else {
         return res.render('cookiemismatch');
     }
 });
-router.post('/checkout', (req, res) => {
-    let cookie = req.body.ID;
-    if (cookie == cookiea) {
-        db.query('select * from books where status = 0;',
-            (error, result, fields) => {
-                let a = result;
-                return res.render('admin',{ approval: a,SessionID: cookiea });
-            })
-    }
-    else {
-        return res.render('cookiemismatch');
-    }
+router.post('/admin/approvedadmin', (req, res) => {
+    let name = req.body.name;
+    let password = req.body.password;
+    db.query('delete from adminreq where user=' + db.escape(name) + ';')
+    let string = new String(password);
+    let salt = random.generate(8);
+    string += salt;
+    const hash = crypto.createHash('sha256').update(string).digest('base64');
+    db.query('insert into admin values(' + db.escape(name) + ',' + db.escape(hash) + ',' + db.escape(salt) + ');');
+    return res.render('admin', { SessionID: cookiea });
 });
-router.post('/checkin', (req, res) => {
-    let cookie = req.body.ID;
-    if (cookie == cookiea) {
-        db.query('select * from books where status = -1;',
-            (error, result, fields) => {
-                let a = result;
-                return res.render('admin',{ ret: a,SessionID: cookiea });
-            })
-    }
-    else {
-        return res.render('cookiemismatch');
-    }
+router.post('/admin/disapprovedadmin', (req, res) => {
+    let name = req.body.name;
+    db.query('delete from adminreq where user="' + db.escape(name) + '";')
+    return res.render('admin', { SessionID: cookiea });
 });

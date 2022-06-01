@@ -1,5 +1,6 @@
 *{
-    background-color: #3b5998;
+    background-color: 	#25D366;
+    color: white;
 }
 #a {
     display: flex;
@@ -8,16 +9,12 @@
 }
 
 #b {
+    margin-top: 4vh;
     display: flex;
     flex-direction: row;
     gap: 120px;
 }
 
-#books {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
 
 #logout {
     padding-left: 44vw;
@@ -25,14 +22,14 @@
 
 #foo {
     color: black;
-    background-color: #D2042D;
+    background-color: rgb(234, 116, 20);
     height: 50px;
     width: 100px;
 }
 
 #button {
     color: black;
-    background-color: 	#D2042D;
+    background-color: rgb(234, 116, 20);
 }
 #buttons{
     margin-left: 2vw;
@@ -47,7 +44,7 @@
 #lists{
     display: flex;
     flex-direction: row;
-    gap: 20vw;
+    gap: 10vw;
 }
 #c{
     display: flex;
@@ -57,5 +54,5 @@
     color: rgb(242, 242, 14);
 }
 li{
-    color: white;
+    color: black;
 }

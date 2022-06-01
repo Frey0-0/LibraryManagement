@@ -5,40 +5,102 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/client.css" />
     <title>Admin Profile</title>
-    <script src="client.js"></script>
 </head>
 
 <body>
-    <h2>Please enter a valid book name which is in the list</h2>
-    <form action="/addbook" method="POST">
-        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
-        <br>
-        <input type="text" name="uname" value="<%=uname %>" style="display:none">
-        <br>
-        <input type="text" name="name" placeholder="BOOK NAME">
-        <br>
-        <input type="submit" value="Add Book" />
-    </form>
+    <h2>Please enter a valid values which is in the list</h2>
+    <div id="b">
+        <form action="/client/requestbook" method="POST">
+            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+            <input id="user" type="text" name="uname" value="<%=uname %>" style="display:none">
+            <br>
+            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
+            <input type="text" name="quantity" id="entry" placeholder="Quantity">
+            <br><br>
+            <input type="submit" id="button" value="Add Book" />
+        </form>
+        <form action="/client/returnbook" method="POST">
+            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+            <input type="text" name="uname" value="<%=uname %>" style="display:none">
+            <br>
+            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
+            <input type="text" name="quantity" id="entry" placeholder="Quantity">
+            <br><br>
+            <input type="submit" id="button" value="Remove Book" />
+        </form>
+    </div>
+    <div id="lists">
+        <div id="c">
+            <h3>Your books</h3>
+            <ul id="l1">
+                <% if(locals.mylist){ %>
+                    <% mylist.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/client/list1" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="text" name="uname" value="<%=uname %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+        </div>
+        <div id="c">
+            <h3>Requested Books</h3>
+            <ul id="l1">
+                <% if(locals.requested){ %>
+                    <% requested.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/client/requestedbooks" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="text" name="uname" value="<%=uname %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+        </div>
+        <div id="c">
+            <h3>Rejected Requests</h3>
+            <ul id="l5">
+                <% if(locals.rejected){ %>
+                    <% rejected.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/client/rejectedrequests" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="text" name="uname" value="<%=uname %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+        </div>
+        <div id="c">
+            <h3>Available Books</h3>
+            <ul id="l2">
+                <% if(locals.available){ %>
+                    <% available.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/client/availablebooks" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="text" name="uname" value="<%=uname %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+        </div>
+    </div>
 
-    <form action="/removebook" method="POST">
-        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
-        <br>
-        <input type="text" name="uname" value="<%=uname %>" style="display:none">
-        <br>
-        <input type="text" name="name" placeholder="BOOK NAME">
-        <br>
-        <input type="submit" value="Remove Book" />
+    <br><br>
+    <form action="/client/logout" method="post" id="logout">
+        <button name="foo" id="foo">Logout</button>
     </form>
-
-    <h3>Your books</h3>
-    <ul id="l1"></ul>
-    <h3>Available Books</h3>
-    <ul id="l2"></ul>
-    <form action="/logout" method="post">
-        <button name="yy">Logout</button>
-    </form>
-
 </body>
-
 </html>

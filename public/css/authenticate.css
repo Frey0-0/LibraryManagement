@@ -1,0 +1,35 @@
+*{
+    font-size: 4vh; 
+}
+body{
+    background-color: black;
+}
+#form{
+    width: 44vw;
+    height:36vh;    
+    background-color: rgb(65, 72, 26);
+    margin-top: 32vh;
+    margin-left: 28vw;
+}
+#login{
+    background-color: yellow;
+}
+#register{
+    background-color: teal ;
+}
+#user{
+    margin-top: 4vh;
+    height: 6vh;
+    color: orange;
+}
+#pass{
+    height: 6vh;
+    color: orange;
+}
+#buttons{
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
+    margin-left: 2vw;
+    margin-bottom: 40vh;
+}

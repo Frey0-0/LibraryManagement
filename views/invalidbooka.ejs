@@ -6,34 +6,176 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Profile</title>
-    <script src="frontend.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/admin.css" />
 </head>
 
 <body>
-    <h2>Please enter a valid book name which is in the list</h2>
-    <form action="/addbook" method="POST">
-        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
-        <br>
-        <input type="text" name="name" placeholder="BOOK NAME">
-        <br>
-        <input type="submit" value="Add Book" />
-    </form>
+    <h2 id="heading">Please enter a valid values which is in the list</h2>
+    <div id="a">
+        <div id="books">
+            <h3>Books available in Library</h3>
+            <form action="/admin/availablebooks" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+            <ul id="l2">
+                <% if(locals.available){ %>
+                    <% available.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+        </div>
 
-    <form action="/removebook" method="POST">
-        <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
-        <br>
-        <input type="text" name="name" placeholder="BOOK NAME">
-        <br>
-        <input type="submit" value="Remove Book" />
-    </form>
-
-    <h3>Books available in Library</h3>
-    <ul id="l2"></ul>
-    <h3>Books with Clients</h3>
-    <ul id="l3"></ul>
-    <form action="/logout" method="post">
-        <button name="foo">Logout</button>
-    </form>
+        <div id="books">
+            <h3>Books with Clients</h3>
+            <form action="/admin/unavailable" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="submit" id="button" value="Show!" />
+            </form>
+            <ul id="l3">
+                <% if(locals.unavailable){ %>
+                    <% unavailable.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> User: <%=book.user %> Quantity: <%= book.quantity %>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+        </div>
+    </div>
+    <div id="b">
+        <form action="/admin/addbook" method="POST">
+            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+            <br>
+            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
+            <input type="text" name="quantity" id="entry" placeholder="Quantity">
+            <br><br>
+            <input type="submit" id="button" value="Add Book" />
+        </form>
+        <form action="/removebook" method="POST">
+            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+            <br>
+            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
+            <input type="text" name="quantity" id="entry" placeholder="Quantity">
+            <br><br>
+            <input type="submit" id="button" value="Remove Book" />
+        </form>
+    </div>
+    <br><br>
+    <div id="lists">
+        <div id="c">
+            <h4 id>List of Checkouts</h4>
+            <ul>
+                <% if(locals.approval){ %>
+                    <% approval.forEach(function(book) { %>
+                        <li> Name: <%= book.name %> User: <%= book.user %> Quantity: <%= book.quantity %><br>
+                                        <div id="buttons">
+                                            <form action="/admin/approved" method="POST">
+                                                <input type="text" name="bname" value="<%=book.name %>"
+                                                    style="display:none">
+                                                <input type="text" name="uname" value="<%=book.user %>"
+                                                    style="display:none">
+                                                <input type="text" name="quantity" value="<%=book.quantity %>"
+                                                    style="display:none">
+                                                <input type="submit" value="Approve" id="button">
+                                            </form>
+                                            <form action="/admin/disapproved" method="POST">
+                                                <input type="text" name="bname" value="<%=book.name %>"
+                                                    style="display:none">
+                                                <input type="text" name="uname" value="<%=book.user %>"
+                                                    style="display:none">
+                                                <input type="text" name="quantity" value="<%=book.quantity %>"
+                                                    style="display:none">
+                                                <input type="submit" value="Disapprove" id="button">
+                                            </form>
+                                        </div>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/admin/checkout" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="submit" id="button" value="See!" />
+            </form>
+        </div>
+        <div id="c">
+            <h4>List of Checkins</h4>
+            <ul>
+                <% if(locals.ret){ %>
+                    <% ret.forEach(function(book) { %>
+                        <% let today=new Date(); %>
+                            <% let fees=(today.getFullYear() - book.year) * 365 + (today.getMonth() - book.month) * 30 +
+                                (today.getDate() - book.day); %>
+                                <li>Name: <%= book.name %> User: <%= book.user %> Fees: <%=fees%> Quantity:
+                                                <%=book.quantity %><br>
+                                                    <div id="buttons">
+                                                        <form action="/admin/approvedreturn" method="POST">
+                                                            <input type="text" name="bname" value="<%=book.name %>"
+                                                                style="display:none">
+                                                            <input type="text" name="uname" value="<%=book.user %>"
+                                                                style="display:none">
+                                                            <input type="text" name="quantity"
+                                                                value="<%=book.quantity %>" style="display:none">
+                                                            <input type="submit" value="Approve" id="button">
+                                                        </form>
+                                                        <form action="/admin/disapprovedreturn" method="POST">
+                                                            <input type="text" name="bname" value="<%=book.name %>"
+                                                                style="display:none">
+                                                            <input type="text" name="uname" value="<%=book.user %>"
+                                                                style="display:none">
+                                                            <input type="text" name="uname" value="<%=book.quantity %>"
+                                                                style="display:none">
+                                                            <input type="submit" value="Disapprove" id="button">
+                                                        </form>
+                                                    </div>
+                                </li>
+                                <% }); %>
+                                    <% } %>
+            </ul>
+            <form action="/admin/checkin" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="submit" id="button" value="See!" />
+            </form>
+        </div>
+        <div id="c">
+            <h4>Admin Requests</h4>
+            <ul>
+                <% if(locals.adminrequests){ %>
+                    <% adminrequests.forEach(function(request) { %>
+                        <li> User: <%= request.user %><br>
+                                    <div id="buttons">
+                                        <form action="/admin/approvedadmin" method="POST">
+                                            <input type="text" name="name" value="<%=request.user %>"
+                                                style="display:none">
+                                            <input type="text" name="password" value="<%=request.password %>"
+                                                style="display:none">
+                                            <input type="submit" value="Approve" id="button">
+                                        </form>
+                                        <form action="/admin/disapprovedadmin" method="POST">
+                                            <input type="text" name="name" value="<%=request.user %>"
+                                                style="display:none">
+                                            <input type="text" name="password" value="<%=request.password %>"
+                                                style="display:none">
+                                            <input type="submit" value="Disapprove" id="button">
+                                        </form>
+                                    </div>
+                        </li>
+                        <% }); %>
+                            <% } %>
+            </ul>
+            <form action="/admin/showadminrequests" method="POST">
+                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
+                <input type="submit" id="button" value="See!" />
+            </form>
+        </div>
+    </div>
+    <br><br><br>    
+    <div>
+        <form action="/admin/logout" method="post" id="logout">
+            <button id="foo">Logout</button>
+        </form>
+    </div>
 
 </body>
 

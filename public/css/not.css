@@ -1,0 +1,12 @@
+*{
+    background-color: black;
+}
+h2{
+ color: whitesmoke;   
+}
+#button{
+    font-size: 1.5vw;
+    margin-left: 2vw;
+    background-color: rgb(244, 244, 90);
+    color: navy;
+}

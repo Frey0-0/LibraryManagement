@@ -5,13 +5,21 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/cookiemismatch.css" />
     <title>Logged Out!</title>
 </head>
 
-<body>
-    <h2>You have been logged out. Please login Again!</h2>
-    <input type="button" onclick="location.href='/authenticate';" value="CLIENT" />
-    <input type="button" onclick="location.href='/authorize';" value="ADMIN" />
+<body><div id="whole">
+    <h2 id="heading">You have been logged out. Please login Again!</h2>
+    <div id="a">
+        <div id="b">
+            <input type="button" id="d" onclick="location.href='/client/authenticate';" value="CLIENT" />
+        </div>
+        <div id="c">
+            <input type="button" id="e" onclick="location.href='/admin/authorize';" value="ADMIN" />
+        </div>
+    </div>
+    </div>
 </body>
 
 </html>

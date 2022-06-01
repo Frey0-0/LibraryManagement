@@ -1,0 +1,38 @@
+#a {
+    display: flex;
+    flex-direction: row;
+    width: 99vw;
+    height: 89vh;
+}
+
+#b {
+    background-color: rgb(23, 198, 211);
+    width: 50vw;
+    height: 90vh;
+}
+
+#c {
+    background-color: yellow;
+    width: 50vw;
+    height: 90vh;
+    align-content: center;
+}
+
+#d {
+    margin-left: 18vw;
+    margin-top: 44vh;
+    font-size: 32px;
+    padding: 32px;
+}
+
+#e {
+    margin-left: 18vw;
+    margin-top: 44vh;
+    font-size: 32px;
+    padding: 32px;
+    background-color: rgb(231, 161, 31);
+}
+#whole{
+    display: flex;
+    flex-direction: column;
+}
