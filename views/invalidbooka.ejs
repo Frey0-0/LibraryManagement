@@ -15,7 +15,6 @@
         <div id="books">
             <h3>Books available in Library</h3>
             <form action="/admin/availablebooks" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
             <ul id="l2">
@@ -31,7 +30,6 @@
         <div id="books">
             <h3>Books with Clients</h3>
             <form action="/admin/unavailable" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
             <ul id="l3">
@@ -46,7 +44,6 @@
     </div>
     <div id="b">
         <form action="/admin/addbook" method="POST">
-            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
             <br>
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
             <input type="text" name="quantity" id="entry" placeholder="Quantity">
@@ -54,7 +51,6 @@
             <input type="submit" id="button" value="Add Book" />
         </form>
         <form action="/removebook" method="POST">
-            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
             <br>
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
             <input type="text" name="quantity" id="entry" placeholder="Quantity">
@@ -95,7 +91,6 @@
                             <% } %>
             </ul>
             <form action="/admin/checkout" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="submit" id="button" value="See!" />
             </form>
         </div>
@@ -134,7 +129,6 @@
                                     <% } %>
             </ul>
             <form action="/admin/checkin" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="submit" id="button" value="See!" />
             </form>
         </div>
@@ -165,7 +159,6 @@
                             <% } %>
             </ul>
             <form action="/admin/showadminrequests" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="submit" id="button" value="See!" />
             </form>
         </div>

@@ -13,7 +13,6 @@
     <h2>Please enter a valid values which is in the list</h2>
     <div id="b">
         <form action="/client/requestbook" method="POST">
-            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
             <input id="user" type="text" name="uname" value="<%=uname %>" style="display:none">
             <br>
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
@@ -22,7 +21,6 @@
             <input type="submit" id="button" value="Add Book" />
         </form>
         <form action="/client/returnbook" method="POST">
-            <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
             <input type="text" name="uname" value="<%=uname %>" style="display:none">
             <br>
             <input type="text" name="name" id="entry" placeholder="BOOK NAME">
@@ -43,7 +41,6 @@
                             <% } %>
             </ul>
             <form action="/client/list1" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
@@ -59,7 +56,6 @@
                             <% } %>
             </ul>
             <form action="/client/requestedbooks" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
@@ -75,7 +71,6 @@
                             <% } %>
             </ul>
             <form action="/client/rejectedrequests" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
@@ -90,8 +85,6 @@
                         <% }); %>
                             <% } %>
             </ul>
-            <form action="/client/availablebooks" method="POST">
-                <input type="text" name="ID" value="<%=SessionID %>" style="display:none">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
             </form>
