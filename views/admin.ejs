@@ -17,14 +17,26 @@
             <form action="/admin/availablebooks" method="POST">
                 <input type="submit" id="button" value="Show!" />
             </form>
-            <ul id="l2">
-                <% if(locals.available){ %>
-                    <% available.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table" style="width:20vw">
+                <table>
+                    <% if(locals.available){ %>
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                        </tr>
+                        <% available.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                                <td>
+                                    <%= book.quantity %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
         </div>
 
         <div id="books">
@@ -32,14 +44,26 @@
             <form action="/admin/unavailable" method="POST">
                 <input type="submit" id="button" value="Show!" />
             </form>
-            <ul id="l3">
-                <% if(locals.unavailable){ %>
-                    <% unavailable.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> User: <%=book.user %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table">
+                <table>
+                    <% if(locals.unavailable){ %>
+                        <tr>
+                            <th>Name</th>
+                            <th>User</th>
+                        </tr>
+                        <% unavailable.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                                <td>
+                                    <%=book.user %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
         </div>
     </div>
     <div id="b">
@@ -62,97 +86,157 @@
     <div id="lists">
         <div id="c">
             <h4 id>List of Checkouts</h4>
-            <ul>
+            <div id="table">
                 <% if(locals.approval){ %>
-                    <% approval.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> User: <%= book.user %> Quantity: <%= book.quantity %><br>
-                                        <div id="buttons">
-                                            <form action="/admin/approved" method="POST">
-                                                <input type="text" name="bname" value="<%=book.name %>"
-                                                    style="display:none">
-                                                <input type="text" name="uname" value="<%=book.user %>"
-                                                    style="display:none">
-                                                <input type="text" name="quantity" value="<%=book.quantity %>"
-                                                    style="display:none">
-                                                <input type="submit" value="Approve" id="button">
-                                            </form>
-                                            <form action="/admin/disapproved" method="POST">
-                                                <input type="text" name="bname" value="<%=book.name %>"
-                                                    style="display:none">
-                                                <input type="text" name="uname" value="<%=book.user %>"
-                                                    style="display:none">
-                                                <input type="text" name="quantity" value="<%=book.quantity %>"
-                                                    style="display:none">
-                                                <input type="submit" value="Disapprove" id="button">
-                                            </form>
-                                        </div>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
-            <form action="/admin/checkout" method="POST">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Action</th>
+                        </tr>
+                        <% approval.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                                <td>
+                                    <%= book.user %>
+                                </td>
+                                <div id="buttons">
+                                    <td>
+                                        <form action="/admin/approved" method="POST">
+                                            <input type="text" name="bname" value="<%=book.name %>"
+                                                style="display:none">
+                                            <input type="text" name="uname" value="<%=book.user %>"
+                                                style="display:none">
+                                            <input type="text" name="quantity" value="<%=book.quantity %>"
+                                                style="display:none">
+                                            <input type="submit" value="Approve" id="button">
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="/admin/disapproved" method="POST">
+                                            <input type="text" name="bname" value="<%=book.name %>"
+                                                style="display:none">
+                                            <input type="text" name="uname" value="<%=book.user %>"
+                                                style="display:none">
+                                            <input type="text" name="quantity" value="<%=book.quantity %>"
+                                                style="display:none">
+                                            <input type="submit" value="Disapprove" id="button">
+                                        </form>
+                                    </td>
+                                </div>
+                            </tr>
+
+                            <% }); %>
+                                <% } %>
+                    </table>
+            </div>
+            <br>
+            <form action="/admin/checkout" method="POST" style="padding-top: 2vh ;">
                 <input type="submit" id="button" value="See!" />
             </form>
         </div>
         <div id="c">
             <h4>List of Checkins</h4>
-            <ul>
-                <% if(locals.ret){ %>
-                    <% ret.forEach(function(book) { %>
-                        <% let today=new Date(); %>
-                            <% let fees=(today.getFullYear() - book.year) * 365 + (today.getMonth() - book.month) * 30 +
-                                (today.getDate() - book.day); %>
-                                <li>Name: <%= book.name %> User: <%= book.user %> Fees: <%=fees%> Quantity:
-                                                <%=book.quantity %><br>
-                                                    <div id="buttons">
-                                                        <form action="/admin/approvedreturn" method="POST">
-                                                            <input type="text" name="bname" value="<%=book.name %>"
-                                                                style="display:none">
-                                                            <input type="text" name="uname" value="<%=book.user %>" style="display:none">
-                                                            <input type="text" name="quantity" value="<%=book.quantity %>" style="display:none">
-                                                            <input type="submit" value="Approve" id="button">
-                                                        </form>
-                                                        <form action="/admin/disapprovedreturn" method="POST">
-                                                            <input type="text" name="bname" value="<%=book.name %>"
-                                                                style="display:none">
-                                                            <input type="text" name="uname" value="<%=book.user %>"
-                                                                style="display:none">
-                                                            <input type="text" name="uname" value="<%=book.quantity %>" style="display:none">
-                                                            <input type="submit" value="Disapprove" id="button">
-                                                        </form>
-                                                    </div>
-                                </li>
-                                <% }); %>
-                                    <% } %>
-            </ul>
-            <form action="/admin/checkin" method="POST">
-                <input type="submit" id="button" value="See!" />
-            </form>
+            <div id="table">
+                <table>
+                    <% if(locals.ret){ %>
+                        <tr>
+                            <th>Name</th>
+                            <th>User</th>
+                            <th>Fees</th>
+                            <th>Action</th>
+                            <th>Action</th>
+                        </tr>
+                        <% ret.forEach(function(book) { %>
+                            <% let today=new Date(); %>
+                                <% let fees=(today.getFullYear() - book.year) * 365 + (today.getMonth() - book.month) *
+                                    30 + (today.getDate() - book.day); %>
+                                    <tr>
+                                        <td>
+                                            <%= book.name %>
+                                        </td>
+                                        <td>
+                                            <%= book.user %>
+                                        </td>
+                                        <td>
+                                            <%=fees%>
+                                        </td>
+                                        <div id="buttons">
+                                            <td>
+                                                <form action="/admin/approvedreturn" method="POST">
+                                                    <input type="text" name="bname" value="<%=book.name %>"
+                                                        style="display:none">
+                                                    <input type="text" name="uname" value="<%=book.user %>"
+                                                        style="display:none">
+                                                    <input type="text" name="quantity" value="<%=book.quantity %>"
+                                                        style="display:none">
+                                                    <input type="submit" value="Approve" id="button">
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/disapprovedreturn" method="POST">
+                                                    <input type="text" name="bname" value="<%=book.name %>"
+                                                        style="display:none">
+                                                    <input type="text" name="uname" value="<%=book.user %>"
+                                                        style="display:none">
+                                                    <input type="text" name="uname" value="<%=book.quantity %>"
+                                                        style="display:none">
+                                                    <input type="submit" value="Disapprove" id="button">
+                                                </form>
+                                            </td>
+                                    </tr>
+            </div>
+            <% }); %>
+                <% } %>
+                    </table>
         </div>
-        <div id="c">
-            <h4>Admin Requests</h4>
-            <ul>
+        <form action="/admin/checkin" method="POST" style="padding-top: 2vh;">
+            <input type="submit" id="button" value="See!" />
+        </form>
+    </div>
+    <div id="c">
+        <h4>Admin Requests</h4>
+        <div id="table">
+            <table>
                 <% if(locals.adminrequests){ %>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Action</th>
+                    </tr>
                     <% adminrequests.forEach(function(request) { %>
-                        <li> User: <%= request.user %><br>
-                                <div id="buttons">
+                        <tr>
+                            <td>
+                                <%= request.user %>
+                            </td>
+
+                            <div id="buttons">
+                                <td>
                                     <form action="/admin/approvedadmin" method="POST">
                                         <input type="text" name="name" value="<%=request.user %>" style="display:none">
                                         <input type="submit" value="Approve" id="button">
                                     </form>
+                                </td>
+                                <td>
                                     <form action="/admin/disapprovedadmin" method="POST">
                                         <input type="text" name="name" value="<%=request.user %>" style="display:none">
                                         <input type="submit" value="Disapprove" id="button">
                                     </form>
-                                </div>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
-            <form action="/admin/showadminrequests" method="POST">
-                <input type="submit" id="button" value="See!" />
-            </form>
+                                </td>
+                            </div>
+                            </li>
+                            <% }); %>
+                                <% } %>
+            </table>
         </div>
+
+        <form action="/admin/showadminrequests" method="POST">
+            <input type="submit" id="button" value="See!" />
+        </form>
+    </div>
     </div>
     <br><br><br>
     <div>

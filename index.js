@@ -33,8 +33,8 @@ router.get('/client/authenticate', (req, res) => {
 router.get('/admin/authorize', (req, res) => {
     res.render('authorize');
 });
-router.get('/client/auth', validateCookiesC, (req, res) => {
-    res.render('admin');
+router.get('/client/auth', validateCookiesClient, (req, res) => {
+    res.render('client');
 });
 router.post('/client/auth', (req, res) => {
     let name = req.body.uname;
@@ -133,7 +133,7 @@ router.post('/client/newuser', (req, res) => {
         });
 });
 
-router.post('/client/requestbook', validateCookiesC, (req, res) => {
+router.post('/client/requestbook', validateCookiesClient, (req, res) => {
     let bname = req.body.name;
     let cookie = req.body.ID;
     let quantity = parseInt(req.body.quantity)
@@ -171,7 +171,7 @@ router.post('/client/requestbook', validateCookiesC, (req, res) => {
             }
         });
 });
-router.post('/client/returnbook', validateCookiesC, (req, res) => {
+router.post('/client/returnbook', validateCookiesClient, (req, res) => {
     let bname = req.body.name;
     let cookie = req.body.ID;
     let name = req.body.uname;
@@ -201,13 +201,13 @@ router.post('/client/returnbook', validateCookiesC, (req, res) => {
         });
 });
 
-router.post('/client/logout', validateCookiesC, (req, res) => {
+router.post('/client/logout', validateCookiesClient, (req, res) => {
     let cookie = req.headers.cookie.slice(10);
     db.query('update users set cookie=null where status=0 AND cookie=' + db.escape(cookie) + ';');
     return res.render('homepage');
 });
 
-router.post('/client/list1', validateCookiesC, (req, res) => {
+router.post('/client/list1', validateCookiesClient, (req, res) => {
     let name = req.body.uname;
     let cookie = req.body.ID;
     db.query('select * from books where status=1 AND user=' + db.escape(name),
@@ -217,7 +217,7 @@ router.post('/client/list1', validateCookiesC, (req, res) => {
         })
 
 });
-router.post('/client/availablebooks', validateCookiesC, (req, res) => {
+router.post('/client/availablebooks', validateCookiesClient, (req, res) => {
     let cookie = req.body.ID;
     let name = req.body.uname;
     db.query('select * from books where status is null;',
@@ -229,7 +229,7 @@ router.post('/client/availablebooks', validateCookiesC, (req, res) => {
 
 });
 
-router.post('/client/requestedbooks', validateCookiesC, (req, res) => {
+router.post('/client/requestedbooks', validateCookiesClient, (req, res) => {
     let cookie = req.body.ID;
     let name = req.body.uname;
     db.query('select * from books where status=0 AND user=' + db.escape(name) + ';',
@@ -239,7 +239,7 @@ router.post('/client/requestedbooks', validateCookiesC, (req, res) => {
         })
 });
 
-router.post('/client/rejectedrequests', validateCookiesC, (req, res) => {
+router.post('/client/rejectedrequests', validateCookiesClient, (req, res) => {
     let cookie = req.body.ID;
     let name = req.body.uname;
     db.query('select * from books where status=2 AND user=' + db.escape(name) + ';',
@@ -251,7 +251,7 @@ router.post('/client/rejectedrequests', validateCookiesC, (req, res) => {
 
 });
 
-function validateCookiesC(req, res, next) {
+function validateCookiesClient(req, res, next) {
     const cookie = req.headers.cookie.slice(10);
     if (cookie == undefined) {
         return res.render('cookiemismatch');
@@ -277,7 +277,7 @@ function validateCookiesC(req, res, next) {
         }
     }
 }
-router.post('/admin/addbook', validateCookiesA, (req, res) => {
+router.post('/admin/addbook', validateCookiesAdmin, (req, res) => {
     let bname = req.body.name;
     let quantity = parseInt(req.body.quantity)
     db.query('select * from books where status is null AND name=' + db.escape(bname) + ';',
@@ -293,7 +293,7 @@ router.post('/admin/addbook', validateCookiesA, (req, res) => {
         })
     return res.render('admin')
 });
-router.post('/admin/removebook', validateCookiesA, (req, res) => {
+router.post('/admin/removebook', validateCookiesAdmin, (req, res) => {
     let bname = req.body.name;
     let cookie = req.body.ID;
     let name = req.body.uname;
@@ -319,19 +319,19 @@ router.post('/admin/removebook', validateCookiesA, (req, res) => {
             }
         })
 });
-router.get('/admin/auth', validateCookiesA, (req, res) => {
+router.get('/admin/auth', validateCookiesAdmin, (req, res) => {
     res.render('admin');
 });
-router.get('/admin/auth', validateCookiesA, (req, res) => {
+router.get('/admin/auth', validateCookiesAdmin, (req, res) => {
     res.render('admin');
 });
-router.post('/admin/logout', validateCookiesA, (req, res) => {
+router.post('/admin/logout', validateCookiesAdmin, (req, res) => {
     let cookie = req.headers.cookie.slice(10);
     db.query('update users set cookie=null where status=1 AND cookie=' + db.escape(cookie) + ';');
     return res.render('homepage');
 });
 
-router.post('/admin/approved', validateCookiesA, (req, res) => {
+router.post('/admin/approved', validateCookiesAdmin, (req, res) => {
     let name = req.body.uname;
     let bname = req.body.bname;
     let quantity = parseInt(req.body.quantity);
@@ -352,13 +352,13 @@ router.post('/admin/approved', validateCookiesA, (req, res) => {
     return res.render('admin');
 });
 
-router.post('/admin/disapproved', validateCookiesA, (req, res) => {
+router.post('/admin/disapproved', validateCookiesAdmin, (req, res) => {
     let name = req.body.uname;
     let bname = req.body.bname;
     let quantity = parseInt(req.body.quantity);
     db.query('select * from books where status is null name=' + db.escape(bname) + ';',
         (err, result, fields) => {
-            if (result[0] != undefined) {
+            if (result != undefined) {
                 db.query('insert into books values(' + db.escape(bname) + ',null,' + db.escape(quantity) + 'null,null,nulll,null);')
             }
             else {
@@ -369,15 +369,16 @@ router.post('/admin/disapproved', validateCookiesA, (req, res) => {
     return res.render('admin');
 });
 
-router.post('/admin/approvedreturn', validateCookiesA, (req, res) => {
+router.post('/admin/approvedreturn', validateCookiesAdmin, (req, res) => {
     let name = req.body.uname;
     let bname = req.body.bname;
     let quantity = parseInt(req.body.quantity);
     console.log(name);
     console.log(bname);
     console.log(quantity);
-    db.query('select * from books where status is null AND name=' + bname + ';',
+    db.query('select * from books where status is null AND name=' + db.escape(bname) + ';',
         (err, result, fields) => {
+            console.log(result);
             if (result != undefined) {
                 db.query('update books set quantity=' + db.escape((result[0].quantity + quantity)) + ' where status is null AND name=' + db.escape(bname) + ';');
             }
@@ -399,21 +400,21 @@ router.post('/admin/approvedreturn', validateCookiesA, (req, res) => {
     return res.render('admin');
 });
 
-router.post('/admin/disapprovedreturn', validateCookiesA, (req, res) => {
+router.post('/admin/disapprovedreturn', validateCookiesAdmin, (req, res) => {
     let name = req.body.uname;
     let bname = req.body.bname;
     db.query('update books set status=2 where user=' + db.escape(name[0]) + ' AND name=' + db.escape(bname) + ' AND status=-1;')
     return res.render('admin');
 });
 
-router.post('/admin/availablebooks', validateCookiesA, (req, res) => {
+router.post('/admin/availablebooks', validateCookiesAdmin, (req, res) => {
     db.query('select * from books where status is null;',
         (error, result, fields) => {
             let a = result;
             return res.render('admin', { available: a });
         })
 });
-router.post('/admin/unavailable', validateCookiesA, (req, res) => {
+router.post('/admin/unavailable', validateCookiesAdmin, (req, res) => {
     db.query('select * from books where status=1;',
         (error, result, fields) => {
             let a = result;
@@ -421,7 +422,7 @@ router.post('/admin/unavailable', validateCookiesA, (req, res) => {
         })
 
 });
-router.post('/admin/checkout', validateCookiesA, (req, res) => {
+router.post('/admin/checkout', validateCookiesAdmin, (req, res) => {
     db.query('select * from books where status = 0;',
         (error, result, fields) => {
             let a = result;
@@ -429,7 +430,7 @@ router.post('/admin/checkout', validateCookiesA, (req, res) => {
         })
 
 });
-router.post('/admin/checkin', validateCookiesA, (req, res) => {
+router.post('/admin/checkin', validateCookiesAdmin, (req, res) => {
     let cookie = req.body.ID;
     db.query('select * from books where status = -1;',
         (error, result, fields) => {
@@ -471,14 +472,14 @@ router.post('/admin/registeradmin', (req, res) => {
             }
         });
 });
-router.post('/admin/showadminrequests', validateCookiesA, (req, res) => {
+router.post('/admin/showadminrequests', validateCookiesAdmin, (req, res) => {
     db.query('select * from adminreq',
         (error, result, fields) => {
             let a = result;
             return res.render('admin', { adminrequests: a });
         })
 });
-router.post('/admin/approvedadmin', validateCookiesA, (req, res) => {
+router.post('/admin/approvedadmin', validateCookiesAdmin, (req, res) => {
     let name = req.body.name;
     db.query('select * from adminreq where user=' + db.escape(name) + ';',
         (err, result, fields) => {
@@ -487,13 +488,13 @@ router.post('/admin/approvedadmin', validateCookiesA, (req, res) => {
     db.query('delete from adminreq where user=' + db.escape(name) + ';')
     return res.render('admin');
 });
-router.post('/admin/disapprovedadmin', validateCookiesA, (req, res) => {
+router.post('/admin/disapprovedadmin', validateCookiesAdmin, (req, res) => {
     let name = req.body.name;
     db.query('delete from adminreq where user=' + db.escape(name) + ';')
     return res.render('admin');
 });
 
-function validateCookiesA(req, res, next) {
+function validateCookiesAdmin(req, res, next) {
     const cookie = req.headers.cookie.slice(10);
     if (cookie == undefined) {
         return res.render('cookiemismatch');

@@ -10,36 +10,39 @@
 </head>
 
 <body>
+    <br><br>
     <h2>Hi <%=uname %>!</h2>
-    <div id="b">
-        <form action="/client/requestbook" method="POST">
-            <input id="user" type="text" name="uname" value="<%=uname %>" style="display:none">
-            <br>
-            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
-            <input type="text" name="quantity" id="entry" placeholder="Quantity">
-            <br><br>
-            <input type="submit" id="button" value="Request Book" />
-        </form>
-        <form action="/client/returnbook" method="POST">
-            <input type="text" name="uname" value="<%=uname %>" style="display:none">
-            <br>
-            <input type="text" name="name" id="entry" placeholder="BOOK NAME">
-            <input type="text" name="quantity" id="entry" placeholder="Quantity">
-            <br><br>
-            <input type="submit" id="button" value="Return Book" />
-        </form>
-    </div>
+    <br><br>
     <div id="lists">
         <div id="c">
             <h3>Your books</h3>
-            <ul id="l1">
-                <% if(locals.mylist){ %>
-                    <% mylist.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table">
+                <table>
+                    <% if(locals.mylist){ %>
+                        <tr>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                        <% mylist.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                                <td>
+                                    <form action="/client/returnbook" method="POST">
+                                        <input type="text" name="uname" value="<%=uname %>" style="display:none">
+                                        <input type="text" name="name" id="entry" value="<%=book.name %>"
+                                            style="display:none">
+                                        <input type="text" name="quantity" id="entry" value="1" style="display:none">
+                                        <input type="submit" id="button" value="Return Book" />
+                                    </form>
+                                </td>
+                            </tr>
+
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
             <form action="/client/list1" method="POST">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
@@ -47,14 +50,22 @@
         </div>
         <div id="c">
             <h3>Requested Books</h3>
-            <ul id="l1">
-                <% if(locals.requested){ %>
-                    <% requested.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table">
+                <table>
+                    <% if(locals.requested){ %>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                        <% requested.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
             <form action="/client/requestedbooks" method="POST">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
@@ -62,14 +73,22 @@
         </div>
         <div id="c">
             <h3>Rejected Requests</h3>
-            <ul id="l5">
-                <% if(locals.rejected){ %>
-                    <% rejected.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table">
+                <table>
+                    <% if(locals.rejected){ %>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                        <% rejected.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
             <form action="/client/rejectedrequests" method="POST">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
@@ -77,14 +96,33 @@
         </div>
         <div id="c">
             <h3>Available Books</h3>
-            <ul id="l2">
-                <% if(locals.available){ %>
-                    <% available.forEach(function(book) { %>
-                        <li> Name: <%= book.name %> Quantity: <%= book.quantity %>
-                        </li>
-                        <% }); %>
-                            <% } %>
-            </ul>
+            <div id="table">
+                <table>
+                    <% if(locals.available){ %>
+                        <tr>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                        <% available.forEach(function(book) { %>
+                            <tr>
+                                <td>
+                                    <%= book.name %>
+                                </td>
+                                <td>
+                                    <form action="/client/requestbook" method="POST">
+                                        <input id="user" type="text" name="uname" value="<%=uname %>"
+                                            style="display:none">
+                                        <input type="text" name="name" id="entry" value="<%=book.name %>"
+                                            style="display:none">
+                                        <input type="text" name="quantity" id="entry" value="1" style="display:none">
+                                        <input type="submit" id="button" value="Request Book" />
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+                </table>
+            </div>
             <form action="/client/availablebooks" method="POST">
                 <input type="text" name="uname" value="<%=uname %>" style="display:none">
                 <input type="submit" id="button" value="Show!" />
@@ -92,7 +130,7 @@
         </div>
     </div>
 
-    <br><br>
+    <br><br><br><br>
     <form action="/client/logout" method="post" id="logout">
         <button name="foo" id="foo">Logout</button>
     </form>

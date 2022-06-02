@@ -1,10 +1,11 @@
-*{
+* {
     background-color: #3b5998;
 }
+
 #a {
     display: flex;
     flex-direction: row;
-    gap: 60px;
+    gap: 18vw;
 }
 
 #b {
@@ -32,30 +33,57 @@
 
 #button {
     color: black;
-    background-color: 	#D2042D;
+    background-color: #D2042D;
 }
-#buttons{
+
+#buttons {
     margin-left: 2vw;
     margin-top: 2vh;
     display: flex;
     flex-direction: row;
-    gap:1vw;
+    gap: 1vw;
 }
-#entry{
+
+#entry {
     background-color: grey;
 }
-#lists{
+
+#lists {
     display: flex;
     flex-direction: row;
     gap: 20vw;
 }
-#c{
+
+#c {
     display: flex;
     flex-direction: column;
 }
-#heading{
+
+#heading {
     color: rgb(242, 242, 14);
 }
-li{
+
+li {
     color: white;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+#table {
+    width: 12vw;
 }

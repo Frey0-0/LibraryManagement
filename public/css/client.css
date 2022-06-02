@@ -1,7 +1,8 @@
-*{
-    background-color: 	#25D366;
+* {
+    background-color: #25D366;
     color: white;
 }
+
 #a {
     display: flex;
     flex-direction: row;
@@ -31,28 +32,54 @@
     color: black;
     background-color: rgb(234, 116, 20);
 }
-#buttons{
+
+#buttons {
     margin-left: 2vw;
     margin-top: 2vh;
     display: flex;
     flex-direction: row;
-    gap:1vw;
+    gap: 1vw;
 }
-#entry{
+
+#entry {
     background-color: grey;
 }
-#lists{
+
+#lists {
     display: flex;
     flex-direction: row;
-    gap: 10vw;
+    gap: 12vw;
 }
-#c{
+
+#c {
     display: flex;
     flex-direction: column;
 }
-#heading{
+
+#heading {
     color: rgb(242, 242, 14);
 }
-li{
+
+li {
     color: black;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+#table{
+    width:12vw;
 }
